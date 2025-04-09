@@ -9,9 +9,10 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchNumbersFromMicroservice } from "@/services/api";
 import { NumberType, WindowState } from "@/types";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Index = () => {
   const [windowSize, setWindowSize] = useState<number>(10);
@@ -35,15 +36,19 @@ const Index = () => {
       
       setWindowState(result);
       
-      // Show success toast for the specific number type
+      // Show appropriate toast based on whether data is real or mock
       const numberTypeLabels: Record<NumberType, string> = {
         p: "Prime",
         f: "Fibonacci",
         e: "Even",
         r: "Random"
       };
-      
-      toast.success(`${numberTypeLabels[type]} numbers fetched successfully`);
+
+      if (result.isMock) {
+        toast.warning(`Using mock ${numberTypeLabels[type]} numbers - API unavailable`);
+      } else {
+        toast.success(`${numberTypeLabels[type]} numbers fetched successfully`);
+      }
     } catch (error) {
       console.error("Failed to fetch data:", error);
       toast.error("Failed to fetch data");
@@ -126,6 +131,16 @@ const Index = () => {
           </div>
         )}
 
+        {windowState && windowState.isMock && (
+          <Alert variant="warning" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Using Mock Data</AlertTitle>
+            <AlertDescription>
+              The API is currently unavailable or timed out. Showing mock data instead.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {windowState && (
           <Tabs
             defaultValue="dashboard"
@@ -199,6 +214,7 @@ const Index = () => {
                   <CardTitle>Formatted JSON Response</CardTitle>
                   <CardDescription>
                     The response from the microservice API
+                    {windowState.isMock && " (mock data)"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -212,7 +228,8 @@ const Index = () => {
                 <CardHeader>
                   <CardTitle>Raw Server Response</CardTitle>
                   <CardDescription>
-                    Raw numbers received from the third-party server
+                    Raw numbers received from the 
+                    {windowState.isMock ? " mock data" : " third-party server"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

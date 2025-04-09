@@ -3,6 +3,7 @@ export type NumberType = 'p' | 'f' | 'e' | 'r';
 
 export interface NumberResponse {
   numbers: number[];
+  isMock?: boolean;
 }
 
 export interface WindowState {
@@ -10,4 +11,5 @@ export interface WindowState {
   windowCurrState: number[];
   numbers: number[];
   avg: number;
+  isMock?: boolean;
 }

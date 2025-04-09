@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Card } from "@/components/ui/card";
 
 type JsonDisplayProps = {
   data: any;
@@ -14,12 +15,12 @@ const JsonDisplay: React.FC<JsonDisplayProps> = ({ data, title }) => {
     const highlighted = json.replace(
       /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
       (match) => {
-        let cls = "json-value"; // number, boolean, null
+        let cls = "text-blue-600 dark:text-blue-400"; // number, boolean, null
         if (/^"/.test(match)) {
           if (/:$/.test(match)) {
-            cls = "json-key"; // key
+            cls = "text-gray-800 dark:text-gray-300 font-semibold"; // key
           } else {
-            cls = "json-string"; // string
+            cls = "text-green-600 dark:text-green-400"; // string
           }
         }
         return `<span class="${cls}">${match}</span>`;
@@ -28,7 +29,7 @@ const JsonDisplay: React.FC<JsonDisplayProps> = ({ data, title }) => {
     
     return (
       <div
-        className="json-display overflow-auto"
+        className="overflow-auto font-mono text-sm bg-slate-50 dark:bg-slate-900 p-4 rounded-md max-h-96"
         dangerouslySetInnerHTML={{ __html: highlighted }}
       />
     );

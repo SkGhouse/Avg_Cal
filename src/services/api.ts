@@ -1,3 +1,4 @@
+
 import { NumberResponse, NumberType, WindowState } from "@/types";
 import { toast } from "sonner";
 
@@ -10,6 +11,14 @@ const NUMBER_ENDPOINTS: Record<NumberType, string> = {
   f: `${BASE_URL}/fibo`,
   e: `${BASE_URL}/even`,
   r: `${BASE_URL}/rand`,
+};
+
+// Mock data for when API fails
+const MOCK_DATA: Record<NumberType, number[]> = {
+  p: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47],
+  f: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377],
+  e: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30],
+  r: [15, 23, 6, 42, 37, 19, 94, 52, 13, 67, 81, 33, 44, 71, 29],
 };
 
 // Get numbers from the test server with timeout handling
@@ -34,16 +43,17 @@ export const fetchNumbers = async (
   } catch (error) {
     if ((error as Error).name === "AbortError") {
       console.warn("Request timeout exceeded 500ms");
-      return null;
+      // Return mock data with a note that it's a fallback
+      return { numbers: MOCK_DATA[type], isMock: true };
     }
     
     console.error(`Error fetching ${type} numbers:`, error);
-    toast.error(`Failed to fetch ${type} numbers`);
-    return null;
+    // Return mock data with a note that it's a fallback
+    return { numbers: MOCK_DATA[type], isMock: true };
   }
 };
 
-// Mock API for simulating the microservice
+// Process and store numbers according to requirements
 export const fetchNumbersFromMicroservice = async (
   type: NumberType,
   windowState: WindowState | null,
@@ -59,11 +69,13 @@ export const fetchNumbersFromMicroservice = async (
       windowCurrState: [],
       numbers: [],
       avg: 0,
+      isMock: true
     };
   }
   
   // Process the numbers
   const newNumbers = response.numbers;
+  const isMock = 'isMock' in response && response.isMock === true;
   
   // Create initial state if this is the first request
   if (!windowState) {
@@ -75,6 +87,7 @@ export const fetchNumbersFromMicroservice = async (
       windowCurrState: initialNumbers,
       numbers: newNumbers,
       avg,
+      isMock
     };
   }
   
@@ -110,6 +123,7 @@ export const fetchNumbersFromMicroservice = async (
     windowCurrState,
     numbers: newNumbers,
     avg,
+    isMock
   };
 };
 
