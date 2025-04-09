@@ -2,15 +2,15 @@
 import { NumberResponse, NumberType, WindowState } from "@/types";
 import { toast } from "sonner";
 
-// Base URL for test server
-const BASE_URL = "http://20.244.56.144/evaluation-service";
+// Base URL for local server
+const BASE_URL = "http://localhost:9876";
 
 // URL mapping for different number types
 const NUMBER_ENDPOINTS: Record<NumberType, string> = {
-  p: `${BASE_URL}/primes`,
-  f: `${BASE_URL}/fibo`,
-  e: `${BASE_URL}/even`,
-  r: `${BASE_URL}/rand`,
+  p: `${BASE_URL}/numbers/p`,
+  f: `${BASE_URL}/numbers/f`,
+  e: `${BASE_URL}/numbers/e`,
+  r: `${BASE_URL}/numbers/r`,
 };
 
 // Mock data for when API fails
@@ -21,7 +21,7 @@ const MOCK_DATA: Record<NumberType, number[]> = {
   r: [15, 23, 6, 42, 37, 19, 94, 52, 13, 67, 81, 33, 44, 71, 29],
 };
 
-// Get numbers from the test server with timeout handling
+// Get numbers from the local server with timeout handling
 export const fetchNumbers = async (
   type: NumberType
 ): Promise<NumberResponse | null> => {
@@ -59,7 +59,7 @@ export const fetchNumbersFromMicroservice = async (
   windowState: WindowState | null,
   windowSize: number
 ): Promise<WindowState> => {
-  // Fetch numbers from test server
+  // Fetch numbers from local server
   const response = await fetchNumbers(type);
   
   if (!response) {
