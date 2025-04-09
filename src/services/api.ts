@@ -27,7 +27,8 @@ export const fetchNumbers = async (
 ): Promise<NumberResponse | null> => {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 500);
+    // Increased timeout from 500ms to 3000ms (3 seconds)
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
     
     const response = await fetch(NUMBER_ENDPOINTS[type], {
       signal: controller.signal,
@@ -42,7 +43,7 @@ export const fetchNumbers = async (
     return await response.json();
   } catch (error) {
     if ((error as Error).name === "AbortError") {
-      console.warn("Request timeout exceeded 500ms");
+      console.warn("Request timeout exceeded 3000ms");
       // Return mock data with a note that it's a fallback
       return { numbers: MOCK_DATA[type], isMock: true };
     }
